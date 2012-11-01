@@ -1,12 +1,12 @@
 module CDB
-  class Title < Struct.new(:cdb_id, :name, :publisher, :imprint, :begin_date, :end_date, :country, :language)
+  class Title < Struct.new(:cdb_id, :name, :publisher, :begin_date, :end_date)
     FORM_SEARCHTYPE = 'Title'
     WEB_PATH = 'title.php'
 
     class << self
 
       def search(query)
-        results = CDB.search(FORM_SEARCHTYPE, query)
+        results = CDB.search(query, FORM_SEARCHTYPE)
         results[:titles]
       end
 
@@ -15,7 +15,8 @@ module CDB
           id = link.attr('href').split('=').last
           text = link.child.text.strip
           name = text.slice(0..-8)
-          pub = link.next_sibling.text.strip.gsub(/^\(|\)$/, '')
+          year = text.slice(-5..-2)
+          pub = link.next_sibling.text.gsub(/^\s*\(|\)\s*$/, '')
           new(:cdb_id => id, :name => name, :publisher => pub, :begin_date => year)
         end
       end

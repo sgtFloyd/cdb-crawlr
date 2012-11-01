@@ -1,10 +1,10 @@
 require 'nokogiri'
-require 'typhoeus'
-require 'uri'
+require 'open-uri'
 
 $:.unshift(File.dirname(__FILE__))
 
 require 'cdb/struct'
+require 'cdb/issue'
 require 'cdb/title'
 
 module CDB
@@ -16,16 +16,19 @@ module CDB
 
   class << self; attr
 
-    def search(searchtype, query)
+    def search(query, searchtype=nil)
       data = URI.encode_www_form(
         form_searchtype: searchtype,
         form_search: query
       )
       url = "#{BASE_URL}/#{SEARCH_PATH}?#{data}"
-      resp = Typhoeus::Request.get(url, :headers => REQUEST_HEADERS)
-      node = Nokogiri::HTML(resp.body).css('h2:contains("Search Results")').first.parent
+      response = open(url, REQUEST_HEADERS).read
+      response.force_encoding('ISO-8859-1').encode!('UTF-8')
+      doc = Nokogiri::HTML(response, nil, 'UTF-8')
+      node = doc.css('h2:contains("Search Results")').first.parent
       {
-        :titles => CDB::Title.parse_results(node)
+        :titles => CDB::Title.parse_results(node),
+        :issues => CDB::Issue.parse_results(node)
       }
     end
 

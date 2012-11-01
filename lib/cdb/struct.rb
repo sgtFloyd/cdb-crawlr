@@ -1,6 +1,5 @@
 module CDB
-
-  # Prodives modifications to Ruby's Struct class for use within the CDB module.
+  # Modifications to Ruby's Struct class for use within the CDB module.
   # Must be called 'Struct' to play nice with YARD's @attr documentation.
   class Struct < Struct
 
