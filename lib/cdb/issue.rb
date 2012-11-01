@@ -14,9 +14,9 @@ module CDB
         node.css("a[href^=\"#{WEB_PATH}\"]").map do |link|
           id = link.attr('href').split('=').last
           text = link.child.text.strip
-          match = text.match(/^(.*) \((\d{4})\) (.*)$/)
+          match = text.match(/^(.* \(\d{4}\)) (.*)$/)
           title, num = match[1..2]
-          name = link.next_sibling.text.gsub(/^\s*-\s*"|"\s*$/, '')
+          name = link.next_sibling.text.strip.gsub(/^-\s*"|"$/, '').strip
           new(:cdb_id => id, :title => title, :num => num, :name => name)
         end
       end

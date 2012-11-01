@@ -16,9 +16,9 @@ module CDB
 
   class << self; attr
 
-    def search(query, searchtype=nil)
+    def search(query, type='FullSite')
       data = URI.encode_www_form(
-        form_searchtype: searchtype,
+        form_searchtype: type,
         form_search: query
       )
       url = "#{BASE_URL}/#{SEARCH_PATH}?#{data}"
