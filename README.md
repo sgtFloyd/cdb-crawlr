@@ -1,4 +1,4 @@
 cdb-crawlr
 ==========
 
-Ruby CLI for crawling and parsing comicbookdb.com
+Ruby gem and command-line tool for querying ComidBookDB.com
