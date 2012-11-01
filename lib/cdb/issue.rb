@@ -12,17 +12,11 @@ module CDB
 
       def parse_results(node)
         node.css("a[href^=\"#{WEB_PATH}\"]").map do |link|
-          begin
-            id = link.attr('href').split('=').last
-            text = link.child.text.strip
-            match = text.match(/^(.*) \((\d{4})\) (.*)$/)
-            title, num = match[1..2]
-            name = link.next_sibling.text.gsub(/^\s*-\s*"|"\s*$/, '')
-          rescue => e
-            puts link
-            puts link.next_sibling
-            raise e
-          end
+          id = link.attr('href').split('=').last
+          text = link.child.text.strip
+          match = text.match(/^(.*) \((\d{4})\) (.*)$/)
+          title, num = match[1..2]
+          name = link.next_sibling.text.gsub(/^\s*-\s*"|"\s*$/, '')
           new(:cdb_id => id, :title => title, :num => num, :name => name)
         end
       end

@@ -22,9 +22,9 @@ module CDB
         form_search: query
       )
       url = "#{BASE_URL}/#{SEARCH_PATH}?#{data}"
-      response = open(url, REQUEST_HEADERS).read
-      response.force_encoding('ISO-8859-1').encode!('UTF-8')
-      doc = Nokogiri::HTML(response, nil, 'UTF-8')
+      content = open(url, REQUEST_HEADERS).read
+      content.force_encoding('ISO-8859-1').encode!('UTF-8')
+      doc = Nokogiri::HTML(content)
       node = doc.css('h2:contains("Search Results")').first.parent
       {
         :titles => CDB::Title.parse_results(node),
