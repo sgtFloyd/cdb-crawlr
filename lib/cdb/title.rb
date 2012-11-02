@@ -12,7 +12,7 @@ module CDB
 
       def parse_results(node)
         node.css("a[href^=\"#{WEB_PATH}\"]").map do |link|
-          id = link.attr('href').split('=').last
+          id = link.attr('href').split('=').last.to_i
           text = link.child.text.strip
           name = text.slice(0..-8)
           year = text.slice(-5..-2)

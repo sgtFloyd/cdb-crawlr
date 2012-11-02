@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+require 'cdb-crawlr'
+require 'optparse'
+
+options = {}
+scopes = ['all', 'titles', 'issues']
+
+global = OptionParser.new do |opts|
+  opts.banner = "Usage: cdb [-h|--help] [-v|--version] <command> [<args>]"
+
+  opts.on("-h", "--help", "Display this screen") do |v|
+    puts opts
+    exit
+  end
+
+  opts.on("-v", "--version", "Show version information") do |v|
+    puts "cdb #{CDB::VERSION}"
+    exit
+  end
+end
+
+subcommands = {
+  'search' => OptionParser.new do |opts|
+    opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<scope>] [<args>]"
+
+    opts.on("-h", "--help", "Display this screen") do |v|
+      puts opts
+      exit
+    end
+
+    opts.on("-s", "--scope", "Limit search to a kind of object") do |v|
+      options[:scope] = v.strip.downcase
+      unless scopes.include?( options[:scope] )
+        puts "invalid scope: #{v}"
+        puts opts
+        exit 1
+      end
+    end
+  end
+}
+
+begin
+  global.order!
+rescue OptionParser::InvalidOption => e
+  puts e
+  puts global
+  exit 1
+end
+
+options[:command] = command = ARGV.shift
+subcommand = subcommands[command]
+unless subcommand
+  puts "invalid command: #{command}"
+  puts global
+  exit 1
+end
+
+begin
+  subcommand.order!
+rescue OptionParser::InvalidOption => e
+  puts e
+  puts subcommand
+  exit 1
+end
+
+puts "args: #{ARGV.join(' ')}"
