@@ -9,7 +9,7 @@ Install the gem: https://rubygems.org/gems/cdb-crawlr
 
     gem install cdb-crawlr
 
-##### Supported actions, v0.0.2:
+##### Supported Actions:
 
 ```ruby
 require 'cdb-crawlr'
