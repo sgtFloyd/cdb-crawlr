@@ -4,65 +4,67 @@ require 'cdb-crawlr'
 require 'optparse'
 
 options = {}
-scopes = ['all', 'titles', 'issues']
+scopes = ['all', 'title', 'issue']
 
-global = OptionParser.new do |opts|
+def print_help(opt = @global)
+  puts opt
+  exit 1
+end
+
+@global = OptionParser.new do |opts|
   opts.banner = "Usage: cdb [-h|--help] [-v|--version] <command> [<args>]"
 
-  opts.on("-h", "--help", "Display this screen") do |v|
-    puts opts
-    exit
-  end
-
-  opts.on("-v", "--version", "Show version information") do |v|
-    puts "cdb #{CDB::VERSION}"
-    exit
+  opts.on("-h", "--help", "Display this screen"){ print_help }
+  opts.on("-v", "--version", "Show version information") do
+    puts "cdb #{CDB::VERSION}"; exit
   end
 end
 
-subcommands = {
-  'search' => OptionParser.new do |opts|
-    opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<scope>] [<args>]"
+@search = OptionParser.new do |opts|
+  opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<type>] [<args>]"
 
-    opts.on("-h", "--help", "Display this screen") do |v|
-      puts opts
-      exit
-    end
-
-    opts.on("-s", "--scope=<scope>", "Specify type of search. Default: all") do |v|
-      options[:scope] = v.strip.downcase
-      unless scopes.include?( options[:scope] )
-        puts "invalid scope: #{v}"
-        puts opts
-        exit 1
-      end
+  opts.on("-h", "--help", "Display this screen"){ print_help opts }
+  opts.on("-s", "--scope=<type>", "Specify type of search. Default: all") do |v|
+    options[:scope] = v.strip.downcase.chomp('s')
+    unless scopes.include?( options[:scope] )
+      puts "invalid scope: #{v}"
+      print_help opts
     end
   end
+end
+
+@command_opts = {
+  'search' => @search
 }
 
+# Parse global flags
 begin
-  global.order!
+  @global.order!
 rescue OptionParser::InvalidOption => e
-  puts e
-  puts global
-  exit 1
+  puts e; print_help
 end
 
-options[:command] = command = ARGV.shift
-subcommand = subcommands[command]
-unless subcommand
-  puts "invalid command: #{command}"
-  puts global
-  exit 1
+# Pop and verify command
+options[:command] = ARGV.shift.downcase rescue nil
+unless command_opt = @command_opts[options[:command]]
+  if options[:command] && !options[:command].empty?
+    puts "invalid command: #{options[:command]}"
+  end
+  print_help
 end
 
+# Parse command flags
 begin
-  subcommand.order!
-rescue OptionParser::InvalidOption => e
-  puts e
-  puts subcommand
-  exit 1
+  command_opt.order!
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument => e
+  puts e; print_help command_opt
 end
 
+# Pop and verify args
 options[:args] = ARGV.join(' ')
-puts "options: #{options}"
+if options[:args].empty?
+  puts "empty #{options[:command]} arguments"
+  print_help command_opt
+end
+
+puts options
