@@ -29,7 +29,7 @@ subcommands = {
       exit
     end
 
-    opts.on("-s", "--scope", "Limit search to a kind of object") do |v|
+    opts.on("-s", "--scope=<scope>", "Specify type of search. Default: all") do |v|
       options[:scope] = v.strip.downcase
       unless scopes.include?( options[:scope] )
         puts "invalid scope: #{v}"
@@ -64,4 +64,5 @@ rescue OptionParser::InvalidOption => e
   exit 1
 end
 
-puts "args: #{ARGV.join(' ')}"
+options[:args] = ARGV.join(' ')
+puts "options: #{options}"
