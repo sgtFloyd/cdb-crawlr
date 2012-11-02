@@ -3,10 +3,10 @@
 require 'cdb-crawlr'
 require 'optparse'
 
-options = {}
-scopes = ['all', 'title', 'issue']
+$cli = CDB::CLI.new
 
-def print_help(opt = @global)
+def print_help(opt = @global, error=nil)
+  puts error if error
   puts opt
   exit 1
 end
@@ -21,14 +21,14 @@ end
 end
 
 @search = OptionParser.new do |opts|
-  opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<type>] [<args>]"
+  opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<type>] <query>"
 
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
   opts.on("-s", "--scope=<type>", "Specify type of search. Default: all") do |v|
-    options[:scope] = v.strip.downcase.chomp('s')
-    unless scopes.include?( options[:scope] )
-      puts "invalid scope: #{v}"
-      print_help opts
+    begin
+      $cli[:scope] = v
+    rescue
+      print_help opts, "invalid scope: #{v}"
     end
   end
 end
@@ -45,26 +45,27 @@ rescue OptionParser::InvalidOption => e
 end
 
 # Pop and verify command
-options[:command] = ARGV.shift.downcase rescue nil
-unless command_opt = @command_opts[options[:command]]
-  if options[:command] && !options[:command].empty?
-    puts "invalid command: #{options[:command]}"
-  end
-  print_help
+begin
+  command = ARGV.shift
+  $cli[:command] = command
+  command_opt = @command_opts[$cli[:command]]
+rescue
+  error = "invalid_command: #{command}" unless command.to_s.empty?
+  print_help @global, error
 end
 
 # Parse command flags
 begin
   command_opt.order!
 rescue OptionParser::InvalidOption, OptionParser::MissingArgument => e
-  puts e; print_help command_opt
+  print_help command_opt, e
 end
 
 # Pop and verify args
-options[:args] = ARGV.join(' ')
-if options[:args].empty?
-  puts "empty #{options[:command]} arguments"
-  print_help command_opt
+begin
+  $cli[:args] = ARGV.join(' ')
+rescue => e
+  print_help command_opt, e
 end
 
-puts options
+$cli.execute

@@ -4,6 +4,7 @@ require 'open-uri'
 
 $:.unshift(File.dirname(__FILE__))
 
+require 'cdb/cli'
 require 'cdb/struct'
 require 'cdb/issue'
 require 'cdb/title'
