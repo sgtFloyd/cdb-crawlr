@@ -14,15 +14,15 @@ module CDB
     end
 
     def []=(k, v)
+      v = v.to_s.strip
       case k
       when :command
-        v = v.to_s.strip.downcase
+        v = v.downcase
         raise unless COMMANDS.include?(v)
       when :scope
-        v = v.to_s.strip.downcase.gsub(/^=|s$/, '')
+        v = v.downcase.gsub(/^=|s$/, '')
         raise unless SCOPES.include?(v)
       when :args
-        v = v.to_s.strip
         if self[:command] == 'search'
           raise "invalid search query" if v.empty?
         end
@@ -40,8 +40,8 @@ module CDB
       case self[:scope] || 'all'
       when 'all'
         CDB.search(self[:args]).each do |key, res|
-          puts key.to_s.capitalize
-          res.each{|r| puts r.to_json}
+          puts key.to_s.capitalize+':'
+          res.each{|r| puts '  '+r.to_json}
         end
       when 'title'
         CDB::Title.search(self[:args]).each{|r| puts r.to_json}

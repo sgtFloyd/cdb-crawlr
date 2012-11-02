@@ -8,7 +8,7 @@ module CDB
       h.each{|k,v| send("#{k}=", v)}
     end
 
-    def as_json
+    def as_json(*)
       members.inject({}){|map, m|
         map[m] = self[m]; map
       }
