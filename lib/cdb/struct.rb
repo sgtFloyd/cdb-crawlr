@@ -8,10 +8,15 @@ module CDB
       h.each{|k,v| send("#{k}=", v)}
     end
 
-    def to_json(*a)
+    def as_json
       members.inject({}){|map, m|
         map[m] = self[m]; map
-      }.to_json(*a)
+      }
+    end
+
+    def to_json(opts={})
+      opts = {space:' ', object_nl:' '}.merge(opts)
+      self.as_json.to_json(opts)
     end
 
   end

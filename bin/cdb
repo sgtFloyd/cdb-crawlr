@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'cdb-crawlr'
+# load 'lib/cdb-crawlr.rb'
 require 'optparse'
 
 $cli = CDB::CLI.new

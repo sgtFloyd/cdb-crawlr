@@ -1,3 +1,5 @@
+require 'pp'
+
 module CDB
   class CLI
     COMMANDS = %w[search]
@@ -29,7 +31,23 @@ module CDB
     end
 
     def execute
-      puts @options
+      send self[:command]
+    end
+
+  private
+
+    def search
+      case self[:scope] || 'all'
+      when 'all'
+        CDB.search(self[:args]).each do |key, res|
+          puts key.to_s.capitalize
+          res.each{|r| puts r.to_json}
+        end
+      when 'title'
+        CDB::Title.search(self[:args]).each{|r| puts r.to_json}
+      when 'issue'
+        CDB::Issue.search(self[:args]).each{|r| puts r.to_json}
+      end
     end
 
   end
