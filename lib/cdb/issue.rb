@@ -18,7 +18,7 @@ module CDB
           title, num = match[1..2]
           name = link.next_sibling.text.strip.gsub(/^-\s*"|"$/, '').strip
           new(:cdb_id => id, :title => title, :num => num, :name => name)
-        end
+        end.sort_by(&:cdb_id)
       end
 
     end

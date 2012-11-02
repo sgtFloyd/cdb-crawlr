@@ -18,7 +18,7 @@ module CDB
           year = text.slice(-5..-2)
           pub = link.next_sibling.text.gsub(/^\s*\(|\)\s*$/, '')
           new(:cdb_id => id, :name => name, :publisher => pub, :begin_date => year)
-        end
+        end.sort_by(&:cdb_id)
       end
 
     end
