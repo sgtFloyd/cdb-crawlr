@@ -29,7 +29,7 @@ bash$ cdb search --scope=title Walking Dead
 ```ruby
 irb > CDB::Title.show(457) # cdb_id from search
 => <struct CDB::Title
-    cdb_id=457,
+     cdb_id=457,
      name="The Walking Dead",
      publisher="Image Comics",
      imprint="Skybound Entertainment",
