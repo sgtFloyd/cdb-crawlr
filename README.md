@@ -37,11 +37,11 @@ irb > CDB::Title.show(457) # cdb_id from search
      end_date="Ongoing",
      issues=
       [<struct CDB::Issue
-        cdb_id=257301,
-        num="102",
-        name="Something to Fear Part Six",
-        story_arc="Something to Fear",
-        cover_date="September 2012">,
+         cdb_id=257301,
+         num="102",
+         name="Something to Fear Part Six",
+         story_arc="Something to Fear",
+         cover_date="September 2012">,
        <struct CDB::Issue ...],
      country="United States",
      language="English">
