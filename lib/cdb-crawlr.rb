@@ -24,14 +24,27 @@ module CDB
         form_search: query
       )
       url = "#{BASE_URL}/#{SEARCH_PATH}?#{data}"
-      content = open(url, REQUEST_HEADERS).read
-      content.force_encoding('ISO-8859-1').encode!('UTF-8')
-      doc = Nokogiri::HTML(content)
+      doc = read_page(url)
       node = doc.css('h2:contains("Search Results")').first.parent
       {
         :titles => CDB::Title.parse_results(node),
         :issues => CDB::Issue.parse_results(node)
       }
+    end
+
+    def show(id, type)
+      data = URI.encode_www_form('ID' => id)
+      url = "#{BASE_URL}/#{type::WEB_PATH}?#{data}"
+      page = read_page(url)
+      type.parse_data(id, page)
+    end
+
+  private
+
+    def read_page(url)
+      content = open(url, REQUEST_HEADERS).read
+      content.force_encoding('ISO-8859-1').encode!('UTF-8')
+      Nokogiri::HTML(content)
     end
 
   end

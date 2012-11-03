@@ -1,5 +1,5 @@
 module CDB
-  class Title < Struct.new(:cdb_id, :name, :publisher, :begin_date, :end_date)
+  class Title < Struct.new(:cdb_id, :name, :issues, :publisher, :imprint, :begin_date, :end_date, :country, :language)
     FORM_SEARCHTYPE = 'Title'
     WEB_PATH = 'title.php'
 
@@ -8,6 +8,10 @@ module CDB
       def search(query)
         results = CDB.search(query, FORM_SEARCHTYPE)
         results[:titles]
+      end
+
+      def show(id)
+        CDB.show(id, self)
       end
 
       def parse_results(node)
@@ -21,6 +25,26 @@ module CDB
         end.sort_by(&:cdb_id)
       end
 
+      def parse_data(id, page)
+        dates = page.css('strong:contains("Publication Date: ")').first.next_sibling.text.strip
+        start_d, end_d = dates.split('-').map(&:strip)
+
+        title = new(
+          :cdb_id => id,
+          :name => page.css('.page_headline').first.text.strip,
+          :publisher => page.css('a[href^="publisher.php"]').first.text.strip,
+          :imprint => page.css('a[href^="imprint.php"]').first.text.strip,
+          :begin_date => start_d,
+          :end_date => end_d,
+          :country => page.css('strong:contains("Country: ")').first.next_sibling.text.strip,
+          :language => page.css('strong:contains("Language: ")').first.next_sibling.text.strip
+        )
+        title.issues = page.css("td[width='726'] a.page_link[href^=\"#{CDB::Issue::WEB_PATH}\"]").map do |link|
+          tr = link.parent.parent
+          CDB::Issue.from_tr(tr, title)
+        end
+        title
+      end
     end
   end
 end
