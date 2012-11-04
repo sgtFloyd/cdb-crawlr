@@ -7,7 +7,7 @@ require 'optparse'
 $cli = CDB::CLI.new
 
 def print_help(opt = @global, error=nil)
-  puts(error.to_s+"\n\n") if error
+  puts "cdb: #{error}\n\n" if error
   puts opt
   exit 1
 end
