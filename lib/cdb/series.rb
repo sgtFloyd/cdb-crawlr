@@ -30,7 +30,7 @@ module CDB
         start_d, end_d = dates.split('-').map(&:strip)
 
         series = new(
-          :cdb_id => id,
+          :cdb_id => id.to_i,
           :name => page.css('.page_headline').first.text.strip,
           :publisher => page.css('a[href^="publisher.php"]').first.text.strip,
           :imprint => (page.css('a[href^="imprint.php"]').first.text.strip rescue nil),
