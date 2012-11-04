@@ -25,7 +25,7 @@ module CDB
       def from_tr(node, title)
         tds = node.css('td')
         link = tds[0].css("a[href^=\"#{WEB_PATH}\"]").first
-        new(:cdb_id => link['href'].split('=').last.strip,
+        new(:cdb_id => link['href'].split('=').last.strip.to_i,
             :title => title,
             :num => link.text.strip,
             :name => tds[2].text.strip,
