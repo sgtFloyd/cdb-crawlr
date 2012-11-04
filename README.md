@@ -3,13 +3,19 @@ cdb-crawlr
 
 Ruby gem and command-line tool for querying ComicBookDB.com
 
-### Getting Started
+Installation
+------------
 
-Install the gem: https://rubygems.org/gems/cdb-crawlr
+https://rubygems.org/gems/cdb-crawlr
+```
+gem install cdb-crawlr
+```
+```
+gem 'cdb-crawlr'
+```
 
-    gem install cdb-crawlr
-
-##### Supported Actions:
+Examples
+--------
 
 ###### Series Search:
 ```ruby
