@@ -7,10 +7,10 @@ $:.unshift(File.dirname(__FILE__))
 require 'cdb/cli'
 require 'cdb/struct'
 require 'cdb/issue'
-require 'cdb/title'
+require 'cdb/series'
 
 module CDB
-  VERSION = '0.0.4'
+  VERSION = '0.1.0'
 
   BASE_URL = 'http://www.comicbookdb.com'
   REQUEST_HEADERS = {'Connection' => 'keep-alive'}
@@ -27,7 +27,7 @@ module CDB
       doc = read_page(url)
       node = doc.css('h2:contains("Search Results")').first.parent
       {
-        :titles => CDB::Title.parse_results(node),
+        :series => CDB::Series.parse_results(node),
         :issues => CDB::Issue.parse_results(node)
       }
     end

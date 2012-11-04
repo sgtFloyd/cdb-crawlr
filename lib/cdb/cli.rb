@@ -3,7 +3,7 @@ require 'pp'
 module CDB
   class CLI
     COMMANDS = %w[search]
-    SCOPES = %w[all title issue]
+    SCOPES = %w[all series issue]
 
     def initialize(options={})
       @options = options
@@ -20,7 +20,7 @@ module CDB
         v = v.downcase
         raise unless COMMANDS.include?(v)
       when :scope
-        v = v.downcase.gsub(/^=|s$/, '')
+        v = v.downcase.gsub(/^=/, '')
         raise unless SCOPES.include?(v)
       when :args
         if self[:command] == 'search'
@@ -43,8 +43,8 @@ module CDB
           puts key.to_s.capitalize+':'
           res.each{|r| puts '  '+r.to_json}
         end
-      when 'title'
-        CDB::Title.search(self[:args]).each{|r| puts r.to_json}
+      when 'series'
+        CDB::Series.search(self[:args]).each{|r| puts r.to_json}
       when 'issue'
         CDB::Issue.search(self[:args]).each{|r| puts r.to_json}
       end
