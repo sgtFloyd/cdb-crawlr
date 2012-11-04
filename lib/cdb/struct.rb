@@ -10,6 +10,7 @@ module CDB
 
     def as_json(*)
       members.inject({}){|map, m|
+        next map unless self[m]
         map[m] = self[m]; map
       }
     end
