@@ -14,7 +14,6 @@ end
 
 @global = OptionParser.new do |opts|
   opts.banner = "Usage: cdb [-h|--help] [-v|--version] <command> [<args>]"
-
   opts.on("-h", "--help", "Display this screen"){ print_help }
   opts.on("-v", "--version", "Show version information") do
     puts "cdb #{CDB::VERSION}"; exit
@@ -22,20 +21,13 @@ end
 end
 
 @search = OptionParser.new do |opts|
-  opts.banner = "Usage: cdb search [-h|--help] [-s|--scope=<type>] <query>"
-
+  opts.banner = "Usage: cdb search [-h|--help] <type> <query>"
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
-  opts.on("-s", "--scope=<type>", "Specify type of search. Default: all") do |v|
-    begin
-      $cli[:scope] = v
-    rescue
-      print_help opts, "invalid scope: #{v}"
-    end
-  end
 end
 
 @command_opts = {
-  'search' => @search
+  'search' => @search,
+  'show' => nil # stub
 }
 
 # Parse global flags
@@ -62,7 +54,16 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument => e
   print_help command_opt, e
 end
 
-# Pop and verify args
+# Pop and verify type
+begin
+  type = ARGV.shift
+  $cli[:type] = type
+rescue
+  error = "invalid type: #{type}" unless type.to_s.empty?
+  print_help command_opt, error
+end
+
+# Verify args
 begin
   $cli[:args] = ARGV.join(' ')
 rescue => e

@@ -3,7 +3,7 @@ require 'pp'
 module CDB
   class CLI
     COMMANDS = %w[search]
-    SCOPES = %w[all series issue]
+    TYPES = %w[series issue issues]
 
     def initialize(options={})
       @options = options
@@ -19,9 +19,9 @@ module CDB
       when :command
         v = v.downcase
         raise unless COMMANDS.include?(v)
-      when :scope
+      when :type
         v = v.downcase.gsub(/^=/, '')
-        raise unless SCOPES.include?(v)
+        raise unless TYPES.include?(v)
       when :args
         if self[:command] == 'search'
           raise "invalid search query" if v.empty?
@@ -37,15 +37,10 @@ module CDB
   private
 
     def search
-      case self[:scope] || 'all'
-      when 'all'
-        CDB.search(self[:args]).each do |key, res|
-          puts key.to_s.capitalize+':'
-          res.each{|r| puts '  '+r.to_json}
-        end
+      case self[:type]
       when 'series'
         CDB::Series.search(self[:args]).each{|r| puts r.to_json}
-      when 'issue'
+      when 'issue', 'issues'
         CDB::Issue.search(self[:args]).each{|r| puts r.to_json}
       end
     end

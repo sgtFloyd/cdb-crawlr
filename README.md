@@ -25,7 +25,7 @@ irb > CDB::Series.search('Walking Dead')
     <struct CDB::Series ...]
 ```
 ```
-bash$ cdb search --scope=series Walking Dead
+bash$ cdb search series Walking Dead
 { "cdb_id": 457, "name": "The Walking Dead", "publisher": "Image Comics", "start_date": "2003" }
 { "cdb_id": 21275, "name": "Dead Man Walking", "publisher": "Boneyard Press", "start_date": "1992" }
 ...
@@ -61,7 +61,7 @@ irb > CDB::Issue.search('Deadpool')
     <struct CDB::Issue ...]
 ```
 ```
-bash$ cdb search --scope=issue Deadpool
+bash$ cdb search issue Deadpool
 { "cdb_id": 14581, "series": "Wolverine (1988)", "num": "88", "name": "It's D-D-Deadpool, Folks!" }
 { "cdb_id": 60919, "series": "Ultimate Spider-Man (2000)", "num": "TPB vol. 16", "name": "Deadpool" }
 ...
