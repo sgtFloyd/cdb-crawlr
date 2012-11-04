@@ -2,7 +2,7 @@ require 'pp'
 
 module CDB
   class CLI
-    COMMANDS = %w[search]
+    COMMANDS = %w[search show]
     TYPES = %w[series issue issues]
 
     def initialize(options={})
@@ -20,12 +20,15 @@ module CDB
         v = v.downcase
         raise unless COMMANDS.include?(v)
       when :type
-        v = v.downcase.gsub(/^=/, '')
-        raise unless TYPES.include?(v)
-      when :args
-        if self[:command] == 'search'
-          raise "invalid search query" if v.empty?
+        v = v.downcase
+        if self[:command] == 'show'
+          # remove when "show issue" is supported
+          raise unless v == 'series'
+        else
+          raise unless TYPES.include?(v)
         end
+      when :args
+        raise "invalid args" if v.empty?
       end
       @options[k] = v
     end
@@ -42,6 +45,15 @@ module CDB
         CDB::Series.search(self[:args]).each{|r| puts r.to_json}
       when 'issue', 'issues'
         CDB::Issue.search(self[:args]).each{|r| puts r.to_json}
+      end
+    end
+
+    def show
+      case self[:type]
+      when 'series'
+        res = CDB::Series.show(self[:args])
+        res.issues.each{|i| i.series=nil}
+        puts res.to_json(array_nl:"\n", object_nl:"\n", indent:'  ')
       end
     end
 

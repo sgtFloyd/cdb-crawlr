@@ -1,5 +1,5 @@
 module CDB
-  class Series < Struct.new(:cdb_id, :name, :issues, :publisher, :imprint, :start_date, :end_date, :country, :language)
+  class Series < Struct.new(:cdb_id, :name, :publisher, :imprint, :start_date, :end_date, :issues, :country, :language)
     FORM_SEARCHTYPE = 'Title'
     WEB_PATH = 'title.php'
 

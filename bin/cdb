@@ -7,27 +7,48 @@ require 'optparse'
 $cli = CDB::CLI.new
 
 def print_help(opt = @global, error=nil)
-  puts error if error
+  puts(error.to_s+"\n\n") if error
   puts opt
   exit 1
 end
 
 @global = OptionParser.new do |opts|
-  opts.banner = "Usage: cdb [-h|--help] [-v|--version] <command> [<args>]"
+  opts.banner = "Usage: cdb [-h|--help] [-v|--version] <COMMAND> <TYPE> [<ARGS>]"
+
   opts.on("-h", "--help", "Display this screen"){ print_help }
   opts.on("-v", "--version", "Show version information") do
     puts "cdb #{CDB::VERSION}"; exit
   end
+
+  opts.separator "\nCOMMANDS:"
+  opts.separator "    search      Search for entries of a given TYPE matching QUERY"
+  opts.separator "    show        Show details of an entry using a CDB_ID obtained from search"
 end
 
 @search = OptionParser.new do |opts|
-  opts.banner = "Usage: cdb search [-h|--help] <type> <query>"
+  opts.banner = "Search for entries of a given TYPE matching QUERY\n"+
+                "Usage: cdb search [-h|--help] <TYPE> <QUERY>"
+
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
+
+  opts.separator "\nTYPES:"
+  opts.separator "    issue       Search comic issue names for given QUERY"
+  opts.separator "    series      Search comic series names for given QUERY"
+end
+
+@show = OptionParser.new do |opts|
+  opts.banner = "Show details of an entry using a CDB_ID obtained from search\n"+
+                "Usage: cdb show [-h|--help] <TYPE> <CDB_ID>"
+
+  opts.on("-h", "--help", "Display this screen"){ print_help opts }
+
+  opts.separator "\nTYPES:"
+  opts.separator "    series      Get all available details of a comic series"
 end
 
 @command_opts = {
   'search' => @search,
-  'show' => nil # stub
+  'show' => @show
 }
 
 # Parse global flags
@@ -43,7 +64,7 @@ begin
   $cli[:command] = command
   command_opt = @command_opts[$cli[:command]]
 rescue
-  error = "invalid_command: #{command}" unless command.to_s.empty?
+  error = "invalid COMMAND: #{command}" unless command.to_s.empty?
   print_help @global, error
 end
 
@@ -59,7 +80,7 @@ begin
   type = ARGV.shift
   $cli[:type] = type
 rescue
-  error = "invalid type: #{type}" unless type.to_s.empty?
+  error = "invalid TYPE: #{type}" unless type.to_s.empty?
   print_help command_opt, error
 end
 
