@@ -20,8 +20,8 @@ Examples
 ###### Series Search:
 ```ruby
 irb > CDB::Series.search('Walking Dead')
-=> [<struct CDB::Series cdb_id="457", name="The Walking Dead", publisher="Image Comics", start_date="2003">,
-    <struct CDB::Series cdb_id="21275", name="Dead Man Walking", publisher="Boneyard Press", start_date="1992">,
+=> [<struct CDB::Series cdb_id=457, name="The Walking Dead", publisher="Image Comics", start_date="2003">,
+    <struct CDB::Series cdb_id=21275, name="Dead Man Walking", publisher="Boneyard Press", start_date="1992">,
     <struct CDB::Series ...]
 ```
 ```
@@ -77,8 +77,8 @@ bash$ cdb show series 457
 ###### Issue Search:
 ```ruby
 irb > CDB::Issue.search('Deadpool')
-=> [<struct CDB::Issue cdb_id="14581", series="Wolverine (1988)", num="88", name="It's D-D-Deadpool, Folks!">,
-    <struct CDB::Issue cdb_id="60919", series="Ultimate Spider-Man (2000)", num="TPB vol. 16", name="Deadpool">,
+=> [<struct CDB::Issue cdb_id=14581, series="Wolverine (1988)", num="88", name="It's D-D-Deadpool, Folks!">,
+    <struct CDB::Issue cdb_id=60919, series="Ultimate Spider-Man (2000)", num="TPB vol. 16", name="Deadpool">,
     <struct CDB::Issue ...]
 ```
 ```
