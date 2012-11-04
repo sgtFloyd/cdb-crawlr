@@ -1,5 +1,5 @@
 module CDB
-  class Series < Struct.new(:cdb_id, :name, :issues, :publisher, :imprint, :begin_date, :end_date, :country, :language)
+  class Series < Struct.new(:cdb_id, :name, :issues, :publisher, :imprint, :start_date, :end_date, :country, :language)
     FORM_SEARCHTYPE = 'Title'
     WEB_PATH = 'title.php'
 
@@ -21,7 +21,7 @@ module CDB
           name = text.slice(0..-8)
           year = text.slice(-5..-2)
           pub = link.next_sibling.text.gsub(/^\s*\(|\)\s*$/, '')
-          new(:cdb_id => id, :name => name, :publisher => pub, :begin_date => year)
+          new(:cdb_id => id, :name => name, :publisher => pub, :start_date => year)
         end.sort_by(&:cdb_id)
       end
 
@@ -34,7 +34,7 @@ module CDB
           :name => page.css('.page_headline').first.text.strip,
           :publisher => page.css('a[href^="publisher.php"]').first.text.strip,
           :imprint => (page.css('a[href^="imprint.php"]').first.text.strip rescue nil),
-          :begin_date => start_d,
+          :start_date => start_d,
           :end_date => end_d,
           :country => page.css('strong:contains("Country: ")').first.next_sibling.text.strip,
           :language => page.css('strong:contains("Language: ")').first.next_sibling.text.strip

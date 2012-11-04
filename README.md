@@ -20,14 +20,14 @@ Examples
 ###### Series Search:
 ```ruby
 irb > CDB::Series.search('Walking Dead')
-=> [<struct CDB::Series cdb_id="457", name="The Walking Dead", publisher="Image Comics", begin_date="2003">,
-    <struct CDB::Series cdb_id="21275", name="Dead Man Walking", publisher="Boneyard Press", begin_date="1992">,
+=> [<struct CDB::Series cdb_id="457", name="The Walking Dead", publisher="Image Comics", start_date="2003">,
+    <struct CDB::Series cdb_id="21275", name="Dead Man Walking", publisher="Boneyard Press", start_date="1992">,
     <struct CDB::Series ...]
 ```
 ```
 bash$ cdb search --scope=series Walking Dead
-{ "cdb_id": 457, "name": "The Walking Dead", "publisher": "Image Comics", "begin_date": "2003" }
-{ "cdb_id": 21275, "name": "Dead Man Walking", "publisher": "Boneyard Press", "begin_date": "1992" }
+{ "cdb_id": 457, "name": "The Walking Dead", "publisher": "Image Comics", "start_date": "2003" }
+{ "cdb_id": 21275, "name": "Dead Man Walking", "publisher": "Boneyard Press", "start_date": "1992" }
 ...
 ```
 
@@ -39,7 +39,7 @@ irb > CDB::Series.show(457) # cdb_id from search
      name="The Walking Dead",
      publisher="Image Comics",
      imprint="Skybound Entertainment",
-     begin_date="October 2003",
+     start_date="October 2003",
      end_date="Ongoing",
      issues=
       [<struct CDB::Issue
