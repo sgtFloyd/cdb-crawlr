@@ -10,9 +10,6 @@ https://rubygems.org/gems/cdb-crawlr
 ```
 gem install cdb-crawlr
 ```
-```
-gem 'cdb-crawlr'
-```
 
 Examples
 --------
