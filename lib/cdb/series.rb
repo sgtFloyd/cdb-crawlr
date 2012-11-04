@@ -33,7 +33,7 @@ module CDB
           :cdb_id => id,
           :name => page.css('.page_headline').first.text.strip,
           :publisher => page.css('a[href^="publisher.php"]').first.text.strip,
-          :imprint => page.css('a[href^="imprint.php"]').first.text.strip,
+          :imprint => (page.css('a[href^="imprint.php"]').first.text.strip rescue nil),
           :begin_date => start_d,
           :end_date => end_d,
           :country => page.css('strong:contains("Country: ")').first.next_sibling.text.strip,
