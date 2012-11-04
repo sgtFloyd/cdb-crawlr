@@ -2,7 +2,7 @@ require 'pp'
 
 module CDB
   class CLI
-    COMMANDS = %w[search show]
+    COMMANDS = %w[search show rename]
     TYPES = %w[series issue issues]
 
     def initialize(options={})
@@ -15,22 +15,11 @@ module CDB
 
     def []=(k, v)
       v = v.to_s.strip
-      case k
-      when :command
-        v = v.downcase
-        raise unless COMMANDS.include?(v)
-      when :type
-        v = v.downcase
-        if self[:command] == 'show'
-          # remove when "show issue" is supported
-          raise unless v == 'series'
-        else
-          raise unless TYPES.include?(v)
-        end
-      when :args
-        raise "invalid args" if v.empty?
+      if respond_to?("#{k}=")
+        send("#{k}=", v)
+      else
+        @options[k] = v
       end
-      @options[k] = v
     end
 
     def execute
@@ -55,6 +44,39 @@ module CDB
         res.issues.each{|i| i.series=nil}
         puts res.to_json(array_nl:"\n", object_nl:"\n", indent:'  ')
       end
+    end
+
+    def rename
+      puts @options
+    end
+
+    def args=(v)
+      raise "invalid args" if v.empty?
+      @options[:args] = v
+    end
+
+    def command=(v)
+      v = v.downcase
+      raise unless COMMANDS.include?(v)
+      @options[:command] = v
+    end
+
+    def type=(v)
+      v = v.downcase
+      error = "invalid TYPE: #{v}" unless v.empty?
+      if @options[:command] == 'show'
+        # remove when "show issue" is supported
+        raise error.to_s unless v == 'series'
+      else
+        raise error.to_s unless TYPES.include?(v)
+      end
+      @options[:type] = v
+    end
+
+    def path=(v)
+      error = "#{v}: No such directory" unless v.empty?
+      raise error.to_s if Dir[v].empty?
+      @options[:path] = v
     end
 
   end

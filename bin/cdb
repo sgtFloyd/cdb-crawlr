@@ -7,13 +7,13 @@ require 'optparse'
 $cli = CDB::CLI.new
 
 def print_help(opt = @global, error=nil)
-  puts "cdb: #{error}\n\n" if error
+  puts "cdb: #{error}\n" if error && !error.to_s.empty?
   puts opt
   exit 1
 end
 
 @global = OptionParser.new do |opts|
-  opts.banner = "Usage: cdb [-h|--help] [-v|--version] <COMMAND> <TYPE> [<ARGS>]"
+  opts.banner = "Usage: cdb [-v|--version] <COMMAND> [<ARGS>]"
 
   opts.on("-h", "--help", "Display this screen"){ print_help }
   opts.on("-v", "--version", "Show version information") do
@@ -21,13 +21,13 @@ end
   end
 
   opts.separator "\nCOMMANDS:"
+  opts.separator "    rename      Rename a directory of comics according to series data"
   opts.separator "    search      Search for entries of a given TYPE matching QUERY"
   opts.separator "    show        Show details of an entry using a CDB_ID obtained from search"
 end
 
 @search = OptionParser.new do |opts|
-  opts.banner = "Search for entries of a given TYPE matching QUERY\n"+
-                "Usage: cdb search [-h|--help] <TYPE> <QUERY>"
+  opts.banner = "Usage: cdb search <TYPE> <QUERY>"
 
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
 
@@ -37,8 +37,7 @@ end
 end
 
 @show = OptionParser.new do |opts|
-  opts.banner = "Show details of an entry using a CDB_ID obtained from search\n"+
-                "Usage: cdb show [-h|--help] <TYPE> <CDB_ID>"
+  opts.banner = "Usage: cdb show <TYPE> <CDB_ID>"
 
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
 
@@ -46,9 +45,17 @@ end
   opts.separator "    series      Get all available details of a comic series"
 end
 
+@rename = OptionParser.new do |opts|
+  opts.banner = "Usage: cdb rename [-f|--force] <PATH> <CDB_ID>"
+
+  opts.on("-h", "--help", "Display this screen"){ print_help opts }
+  opts.on("-f", "--force", "Perform the rename"){ $cli[:force] = true }
+end
+
 @command_opts = {
   'search' => @search,
-  'show' => @show
+  'show' => @show,
+  'rename' => @rename
 }
 
 # Parse global flags
@@ -75,13 +82,17 @@ rescue OptionParser::InvalidOption, OptionParser::MissingArgument => e
   print_help command_opt, e
 end
 
-# Pop and verify type
+# Pop and verify third argument
 begin
-  type = ARGV.shift
-  $cli[:type] = type
-rescue
-  error = "invalid TYPE: #{type}" unless type.to_s.empty?
-  print_help command_opt, error
+  next_arg = ARGV.shift
+  case $cli[:command]
+  when 'search, show'
+    $cli[:type] = next_arg
+  when 'rename'
+    $cli[:path] = next_arg
+  end
+rescue => e
+  print_help command_opt, e
 end
 
 # Verify args
