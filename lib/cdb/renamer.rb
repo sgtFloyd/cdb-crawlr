@@ -3,7 +3,7 @@ module CDB
     EXTENSIONS = %w[cbz cbr]
     ISSUE_NUM = '[\d\.\-]+'
     INPUT_FORMAT = /#(#{ISSUE_NUM})/
-    SERIES_OUTPUT  = "%{series} #%{num} (%{cover_date})"
+    OUTPUT_FORMAT  = "%{series} #%{num} (%{cover_date})"
 
     def initialize(options)
       @path = options[:path]
@@ -14,8 +14,7 @@ module CDB
 
     def execute
       files.map do |filename|
-        if match = filename.match(INPUT_FORMAT)
-          num = match[1].gsub(/^0+/,'').to_f
+        if num = parse_issue_num(filename)
           if issue = issues[num]
             new_name = generate_output(filename, issue)
             puts "#{pad(filename)} => #{new_name}"
@@ -30,10 +29,16 @@ module CDB
 
   private
 
+    def parse_issue_num(filename)
+      if filename.match(INPUT_FORMAT)
+        match[1].gsub(/^0+/,'').to_f
+      end
+    end
+
     def generate_output(filename, issue)
       json = issue.as_json
       json[:series] = issue.series.name
-      output = SERIES_OUTPUT % json
+      output = OUTPUT_FORMAT % json
       sanitize(output + File.extname(filename))
     end
 
