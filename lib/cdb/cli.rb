@@ -15,9 +15,9 @@ module CDB
 
     def []=(k, v)
       v = v.to_s.strip
-      if respond_to?("#{k}=")
+      begin
         send("#{k}=", v)
-      else
+      rescue NoMethodError
         @options[k] = v
       end
     end
@@ -47,7 +47,6 @@ module CDB
     end
 
     def rename
-      puts @options
       renamer = CDB::Renamer.new(@options)
       renamer.execute
     end

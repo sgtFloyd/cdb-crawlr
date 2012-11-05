@@ -9,6 +9,7 @@ module CDB
       @path = options[:path]
       @cdb_id = options[:args]
       @force = options[:force]
+      @ignore = options[:ignore]
     end
 
     def execute
@@ -17,12 +18,12 @@ module CDB
           num = match[1].gsub(/^0+/,'').to_f
           if issue = issues[num]
             new_name = generate_output(filename, issue)
-            puts "#{filename} => #{new_name}"
+            puts "#{pad(filename)} => #{new_name}"
           else
-            puts "#{filename}: unknown issue #{num}"
+            puts "#{filename}: unknown issue #{num}" unless @ignore
           end
         else
-          puts "#{filename}: invalid format"
+          puts "#{filename}: invalid format" unless @ignore
         end
       end
     end
@@ -40,6 +41,11 @@ module CDB
       filename.gsub(/\:/, ' -')
         .gsub(/\/\\\<\>/, '-')
         .gsub(/\?\*\|\"/, '_')
+    end
+
+    def pad(file)
+      max = files.map(&:length).max
+      file + (' '*(max-file.length))
     end
 
     def files
