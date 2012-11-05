@@ -48,6 +48,8 @@ module CDB
 
     def rename
       puts @options
+      renamer = CDB::Renamer.new(@options)
+      renamer.execute
     end
 
     def args=(v)
