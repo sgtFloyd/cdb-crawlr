@@ -50,7 +50,7 @@ end
 
   opts.on("-h", "--help", "Display this screen"){ print_help opts }
   opts.on("-f", "--force", "Perform the rename without any confirmations"){ $cli[:force] = true }
-  opts.on("-i", "--ignore", "Ignore unknown and misformatted issue numbers"){ $cli[:ignore] = true }
+  opts.on("-i", "--ignore", "Ignore warnings about unknown and misformatted issue numbers"){ $cli[:ignore] = true }
 end
 
 @command_opts = {

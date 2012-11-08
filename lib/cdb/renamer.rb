@@ -1,7 +1,7 @@
 module CDB
   class Renamer
     EXTENSIONS = %w[cbz cbr]
-    ISSUE_NUM = '[\d\.\-]+'
+    ISSUE_NUM = '[\d\.\-b]+'
     INPUT_FORMAT = /#(#{ISSUE_NUM})/
     OUTPUT_FORMAT  = "%{series} #%{num} (%{cover_date})"
 
@@ -13,25 +13,45 @@ module CDB
     end
 
     def execute
-      files.map do |filename|
-        if num = parse_issue_num(filename)
-          if issue = issues[num]
-            new_name = generate_output(filename, issue)
-            puts "#{pad(filename)} => #{new_name}"
-          else
-            puts "#{filename}: unknown issue #{num}" unless @ignore
-          end
-        else
-          puts "#{filename}: invalid format" unless @ignore
-        end
-      end
+      @rename_map =
+        files.each_with_object({}) do |filename, map|
+          map[filename]= transform(filename)
+        end.select{|k,v| v}
+
+      return unless verify_map
     end
 
   private
 
+    def verify_map
+      dups = @rename_map.select do |k,v|
+        @rename_map.values.count(v) > 1
+      end
+      dups.keys.uniq.each do |k|
+        padded = pad(k, dups.keys.map(&:length).max)
+        puts "ERROR: output name clash: #{padded} => #{dups[k]}"
+      end
+      dups.empty?
+    end
+
+    def transform(filename)
+      return unless num = parse_issue_num(filename)
+      if issue = issues[num]
+        new_name = generate_output(filename, issue)
+        puts "#{pad(filename)} => #{new_name}"
+        new_name
+      else
+        puts "WARNING: #{filename}: unknown issue: #{num}" unless @ignore
+      end
+    end
+
     def parse_issue_num(filename)
-      if filename.match(INPUT_FORMAT)
-        match[1].gsub(/^0+/,'').to_f
+      if match = filename.match(INPUT_FORMAT)
+        num = match[1].gsub(/^0+|\.$/,'')
+        num = '0' if num == ''
+        num
+      else
+        puts "WARNING: #{filename}: invalid input format" unless @ignore
       end
     end
 
@@ -48,8 +68,8 @@ module CDB
         .gsub(/\?\*\|\"/, '_')
     end
 
-    def pad(file)
-      max = files.map(&:length).max
+    def pad(file, max=nil)
+      max ||= files.map(&:length).max
       file + (' '*(max-file.length))
     end
 
@@ -67,10 +87,10 @@ module CDB
     end
 
     def issues
-      # Only act on "Issue" issues - not TPB, HC, or anything else
+      # Only act on issues - not TPB, HC, or anything else
       @issues ||= Hash[series.issues
         .select{|i| i.num.match(/^#{ISSUE_NUM}$/)}
-        .map{|i| [i.num.to_f, i]}]
+        .map{|i| [i.num.to_s, i]}]
     end
 
   end

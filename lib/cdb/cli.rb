@@ -76,7 +76,7 @@ module CDB
 
     def path=(v)
       error = "#{v}: No such directory" unless v.empty?
-      raise error.to_s if Dir[v].empty?
+      raise error.to_s unless File.directory?(v)
       @options[:path] = v
     end
 
