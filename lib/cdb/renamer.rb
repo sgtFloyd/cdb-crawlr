@@ -18,10 +18,19 @@ module CDB
           map[filename]= transform(filename)
         end.select{|k,v| v}
 
-      return unless verify_map
+      do_rename if verify_map && @force
     end
 
   private
+
+    def do_rename
+      Dir.chdir(@path) do
+        @rename_map.each do |source, destination|
+          puts "#{pad(source)} => #{destination}"
+          %x[ mv "#{source}" "#{destination}" ]
+        end
+      end
+    end
 
     def verify_map
       dups = @rename_map.select do |k,v|
@@ -38,7 +47,7 @@ module CDB
       return unless num = parse_issue_num(filename)
       if issue = issues[num]
         new_name = generate_output(filename, issue)
-        puts "#{pad(filename)} => #{new_name}"
+        puts "#{pad(filename)} => #{new_name}" unless @force
         new_name
       else
         puts "WARNING: #{filename}: unknown issue: #{num}" unless @ignore
