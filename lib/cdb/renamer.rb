@@ -3,7 +3,7 @@ module CDB
     EXTENSIONS = %w[cbz cbr]
     ISSUE_NUM = '[\d\.\-b]+'
     INPUT_FORMAT = /#(#{ISSUE_NUM})/
-    OUTPUT_FORMAT  = "%{series} #%{num} (%{cover_date})"
+    OUTPUT_FORMAT  = "%{series} #%{padded_num} (%{cover_date})"
 
     def initialize(options)
       @path = options[:path]
@@ -47,7 +47,7 @@ module CDB
       return unless num = parse_issue_num(filename)
       if issue = issues[num]
         new_name = generate_output(filename, issue)
-        puts "#{pad(filename)} => #{new_name}" unless @force
+        # puts "#{pad(filename)} => #{new_name}" unless @force
         new_name
       else
         puts "WARNING: #{filename}: unknown issue: #{num}" unless @ignore
@@ -67,6 +67,7 @@ module CDB
     def generate_output(filename, issue)
       json = issue.as_json
       json[:series] = issue.series.name
+      json[:padded_num] = pad_num(issue.num)
       output = OUTPUT_FORMAT % json
       sanitize(output + File.extname(filename))
     end
@@ -80,6 +81,11 @@ module CDB
     def pad(file, max=nil)
       max ||= files.map(&:length).max
       file + (' '*(max-file.length))
+    end
+
+    def pad_num(num, max=nil)
+      max ||= issues.keys.max.length
+      '0'*(max-num.to_s.length+1)+num.to_s
     end
 
     def files
