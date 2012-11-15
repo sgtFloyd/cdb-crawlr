@@ -1,7 +1,7 @@
 module CDB
   class Renamer
     EXTENSIONS = %w[cbz cbr]
-    ISSUE_NUM = '[\d\.\-b]+'
+    ISSUE_NUM = '[\d\.]+\w?'
     INPUT_FORMAT = /#(#{ISSUE_NUM})/
     OUTPUT_FORMAT  = "%{series} #%{padded_num} (%{cover_date})"
 
@@ -18,7 +18,7 @@ module CDB
           map[filename]= transform(filename)
         end.select{|k,v| v}
 
-      do_rename if verify_map && @force
+      do_rename if verify_map
     end
 
   private
@@ -26,8 +26,11 @@ module CDB
     def do_rename
       Dir.chdir(@path) do
         @rename_map.each do |source, destination|
+          next if source == destination
           puts "#{pad(source)} => #{destination}"
-          %x[ mv "#{source}" "#{destination}" ]
+          if @force
+            %x[ mv "#{source}" "#{destination}" ]
+          end
         end
       end
     end
@@ -46,11 +49,9 @@ module CDB
     def transform(filename)
       return unless num = parse_issue_num(filename)
       if issue = issues[num]
-        new_name = generate_output(filename, issue)
-        # puts "#{pad(filename)} => #{new_name}" unless @force
-        new_name
+        generate_output(filename, issue)
       else
-        puts "WARNING: #{filename}: unknown issue: #{num}" unless @ignore
+        puts "WARNING: #{filename}: unknown issue: #{num}"
       end
     end
 
@@ -73,9 +74,9 @@ module CDB
     end
 
     def sanitize(filename)
-      filename.gsub(/\:/, ' -')
-        .gsub(/\/\\\<\>/, '-')
-        .gsub(/\?\*\|\"/, '_')
+      filename.gsub(/[:]/, ' -')
+        .gsub(/[\/\\<>]/, '-')
+        .gsub(/[\?\*|"]/, '_')
     end
 
     def pad(file, max=nil)
@@ -84,8 +85,8 @@ module CDB
     end
 
     def pad_num(num, max=nil)
-      max ||= issues.keys.max.length
-      '0'*(max-num.to_s.length+1)+num.to_s
+      max ||= max_num_length
+      '0'*(max-num.to_s.length)+num.to_s
     end
 
     def files
@@ -95,6 +96,10 @@ module CDB
           .select{|f| File.file?(f)}.sort
       end
       @files
+    end
+
+    def max_num_length
+      @max_num ||= files.map{|f| parse_issue_num(f).length}.max
     end
 
     def series
