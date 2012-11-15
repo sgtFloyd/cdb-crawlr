@@ -11,7 +11,7 @@ require 'cdb/issue'
 require 'cdb/series'
 
 module CDB
-  VERSION = '0.2.1'
+  VERSION = '0.3.0'
 
   BASE_URL = 'http://www.comicbookdb.com'
   REQUEST_HEADERS = {'Connection' => 'keep-alive'}
