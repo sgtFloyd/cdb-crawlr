@@ -1,9 +1,9 @@
 module CDB
   class Renamer
     EXTENSIONS = %w[cbz cbr]
-    ISSUE_NUM = '[\d\.]+\w?'
+    ISSUE_NUM = '[\d\.]+[a-z]?'
     INPUT_FORMAT = /#(#{ISSUE_NUM})/
-    OUTPUT_FORMAT  = "%{series} #%{padded_num} (%{cover_date})"
+    OUTPUT_FORMAT  = "%{series} #%{padded_num} %{name} (%{cover_date})"
 
     def initialize(options)
       @path = options[:path]
@@ -56,9 +56,10 @@ module CDB
     end
 
     def parse_issue_num(filename)
-      if match = filename.match(INPUT_FORMAT)
+      base = filename.chomp(File.extname(filename))
+      if match = base.match(INPUT_FORMAT)
         num = match[1].gsub(/^0+|\.$/,'')
-        num = '0' if num == ''
+        num = '0' if num.empty?
         num
       else
         puts "WARNING: #{filename}: invalid input format" unless @ignore
@@ -69,6 +70,7 @@ module CDB
       json = issue.as_json
       json[:series] = issue.series.name
       json[:padded_num] = pad_num(issue.num)
+      json[:name] = "- #{json[:name]}" if !json[:name].empty?
       output = OUTPUT_FORMAT % json
       sanitize(output + File.extname(filename))
     end
@@ -77,6 +79,7 @@ module CDB
       filename.gsub(/[:]/, ' -')
         .gsub(/[\/\\<>]/, '-')
         .gsub(/[\?\*|"]/, '_')
+        .gsub(/\s+/, ' ')
     end
 
     def pad(file, max=nil)
@@ -99,7 +102,7 @@ module CDB
     end
 
     def max_num_length
-      @max_num ||= files.map{|f| parse_issue_num(f).length}.max
+      @max_num ||= files.map{|f| parse_issue_num(f).to_s.length}.max
     end
 
     def series
@@ -109,7 +112,7 @@ module CDB
     def issues
       # Only act on issues - not TPB, HC, or anything else
       @issues ||= Hash[series.issues
-        .select{|i| i.num.match(/^#{ISSUE_NUM}$/)}
+        .select{|i| i.num.match(/^#{ISSUE_NUM}$/i)}
         .map{|i| [i.num.to_s, i]}]
     end
 
