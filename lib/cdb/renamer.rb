@@ -89,7 +89,7 @@ module CDB
 
     def pad_num(num, max=nil)
       max ||= max_num_length
-      '0'*(max-num.to_s.length)+num.to_s
+      '0'*(max-num.to_s.split(/[\.\-]/)[0].length)+num.to_s
     end
 
     def files
@@ -102,7 +102,9 @@ module CDB
     end
 
     def max_num_length
-      @max_num ||= files.map{|f| parse_issue_num(f).to_s.length}.max
+      @max_num ||= files.map{|f|
+        parse_issue_num(f).to_s.split(/[\.\-]/)[0].length
+      }.max
     end
 
     def series
