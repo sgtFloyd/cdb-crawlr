@@ -87,7 +87,7 @@ end
 begin
   next_arg = ARGV.shift
   case $cli[:command]
-  when 'search, show'
+  when 'search', 'show'
     $cli[:type] = next_arg
   when 'rename'
     $cli[:path] = next_arg
