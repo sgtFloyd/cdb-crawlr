@@ -39,7 +39,7 @@ module CDB
           :country => page.css('strong:contains("Country: ")').first.next_sibling.text.strip,
           :language => page.css('strong:contains("Language: ")').first.next_sibling.text.strip
         )
-        series.issues = page.css("td[width='726'] a.page_link[href^=\"#{CDB::Issue::WEB_PATH}\"]").map do |link|
+        series.issues = page.css("a.page_link[href^=\"#{CDB::Issue::WEB_PATH}\"]").map do |link|
           tr = link.parent.parent
           CDB::Issue.from_tr(tr, series)
         end
