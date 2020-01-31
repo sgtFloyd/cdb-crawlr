@@ -1,3 +1,3 @@
 source :rubygems
 
-gem 'nokogiri'
+gem "nokogiri", ">= 1.10.4"
