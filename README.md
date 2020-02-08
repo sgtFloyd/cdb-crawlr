@@ -1,3 +1,6 @@
+⚠️ ComicBookDB.com has shut down. This gem is no longer functional or maintained. ⚠️
+===================================================================================
+
 cdb-crawlr
 ==========
 
